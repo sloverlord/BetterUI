@@ -28,10 +28,16 @@
   </ItemGroup>
 
   <ItemGroup>
-        <Reference Include="Assembly-CSharp">
-            <HintPath>$(GameLibDir)/Assembly-CSharp.dll</HintPath>
-        </Reference>
-    </ItemGroup>
+	  <Reference Include="Assembly-CSharp">
+		  <HintPath>$(GameLibDir)/Assembly-CSharp.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.TextMeshPro">
+		  <HintPath>$(GameLibDir)/Unity.TextMeshPro.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UI">
+		  <HintPath>$(GameLibDir)/UnityEngine.UI.dll</HintPath>
+	  </Reference>
+  </ItemGroup>
 
   <!--Automatic deploy-->
   <Target Name="Deploy" AfterTargets="Build;Publish">
