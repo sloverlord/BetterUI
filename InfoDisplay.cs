@@ -12,6 +12,7 @@ namespace BetterUI;
 class InfoDisplay : MonoBehaviour
 {
     private static Panel statsPanel = null;
+    private static Panel statLabelsPanel = null;
 
     private static GameController _gameController;
     
@@ -27,54 +28,82 @@ class InfoDisplay : MonoBehaviour
     {
         if(BetterUI.configInfoDisplay.Value) {
             // copy the controls display so we don't have to manually add a bunch of tweening stuff
-            var pausedTextObject = Instantiate(___owner.hud.transform.parent.Find("ControlsDisplay"), ___owner.hud.transform.parent);
-            var rect = pausedTextObject.GetComponent<RectTransform>();
-            var canvasGroup = pausedTextObject.GetComponent<CanvasGroup>();
+            var statTextObject = Instantiate(___owner.hud.transform.parent.Find("ControlsDisplay"), ___owner.hud.transform.parent);
+            var statsRect = statTextObject.GetComponent<RectTransform>();
+            var statsCanvasGroup = statTextObject.GetComponent<CanvasGroup>();
+
+            var statLabelsTextObject = Instantiate(___owner.hud.transform.parent.Find("ControlsDisplay"), ___owner.hud.transform.parent);
+            var statLabelsRect = statLabelsTextObject.GetComponent<RectTransform>();
+            var statLabelsCanvasGroup = statLabelsTextObject.GetComponent<CanvasGroup>();
+
+            // redo positioning so it comes up from the bottom left
+            statsRect.anchorMin = new Vector2(.8f, 0f);
+            statsRect.anchorMax = new Vector2(.8f, 0f);
+            statsRect.anchoredPosition = new Vector2(50f+10f, 16f);
+            statsRect.sizeDelta = new Vector2(100, 30f);
+
+            statLabelsRect.anchorMin = new Vector2(.85f, 0f);
+            statLabelsRect.anchorMax = new Vector2(.85f, 0f);
+            statLabelsRect.anchoredPosition = new Vector2(50f+10f, 16f);
+            statLabelsRect.sizeDelta = new Vector2(100, 30f);
 
             // this panel will be useful later for adding a stats display
             // for now we can just handle darkness level
             // todo: add an option to always display instead of just on pause
-            statsPanel = pausedTextObject.GetComponent<Panel>();
+            statsPanel = statTextObject.GetComponent<Panel>();
+            statLabelsPanel = statTextObject.GetComponent<Panel>();
 
             // some minor changes to make tweening work properly on first go
-            Traverse.Create(pausedTextObject.GetComponent<AutoShowPanel>()).Field("startTime").SetValue(0f);
-            Traverse.Create(statsPanel).Field("canvasGroup").SetValue(canvasGroup);
-            canvasGroup.alpha = 0f;
+            Traverse.Create(statTextObject.GetComponent<AutoShowPanel>()).Field("startTime").SetValue(0f);
+            Traverse.Create(statsPanel).Field("canvasGroup").SetValue(statsCanvasGroup);
+            statsCanvasGroup.alpha = 0f;
 
-            var allTextObjects = pausedTextObject.GetComponentsInChildren<TextMeshProUGUI>();
+            Traverse.Create(statLabelsTextObject.GetComponent<AutoShowPanel>()).Field("startTime").SetValue(0f);
+            Traverse.Create(statLabelsPanel).Field("canvasGroup").SetValue(statLabelsCanvasGroup);
+            statLabelsCanvasGroup.alpha = 0f;
 
-            for (var i = 0; i < allTextObjects.Length; i++)
+            var statTextMesh = statTextObject.GetComponentsInChildren<TextMeshProUGUI>();
+            var statLabelsTextMesh = statLabelsTextObject.GetComponentsInChildren<TextMeshProUGUI>();
+
+            PlayerController player = _gameController.player.GetComponent<PlayerController>();
+            StatsHolder stats = player.stats;
+
+            string statHeader = $"<line-height=125%><color={BetterUI.configheaderColor.Value}>";
+            statHeader += $"<align=\"left\">{Loadout.CharacterSelection.nameString}\n";
+            statHeader += $"<align=\"left\">{player.gun.gunData.nameString}\n";
+            // *should* be localized in the same way the game does internal
+            statHeader += $"<align=\"left\">{LocalizationSystem.GetLocalizedValue("difficulty_label")} {Loadout.difficultyLevel} \n</color>";
+
+            string statLabels = $"<line-height=125%><color={BetterUI.configLabelColor.Value}>";
+            statLabels += $"<align=\"left\">Damage:\n";
+            statLabels += $"<align=\"left\">Projectiles:\n";
+            statLabels += $"<align=\"left\">Reload Time:\n";
+            statLabels += $"<align=\"left\">Fire Rate:\n";
+            statLabels += $"<align=\"left\">Max Ammo:\n";
+            statLabels += $"<align=\"left\">Pierce:\n";
+            statLabels += $"<align=\"left\">Bounce:\n</color>";
+            statLabelsTextMesh[0].text = statHeader + statLabels;
+
+            string statValues = "<line-height=125%>";
+            statValues += $"<align=\"right\">{Math.Round(stats[StatType.BulletDamage].Modify(player.gun.gunData.damage), 0)} \n";
+            statValues += $"<align=\"right\"> {Math.Round(stats[StatType.Projectiles].Modify(player.gun.gunData.numOfProjectiles), 0)} \n";
+            statValues += $"<align=\"right\"> {Math.Round(stats[StatType.ReloadRate].Modify(player.gun.gunData.reloadDuration), 1)} \n";
+            statValues += $"<align=\"right\"> {Math.Round(1/stats[StatType.FireRate].ModifyInverse(player.gun.gunData.shotCooldown), 1)} \n";
+            statValues += $"<align=\"right\"> {Math.Round(stats[StatType.MaxAmmo].Modify(player.gun.gunData.maxAmmo), 0)} \n";
+            statValues += $"<align=\"right\"> {Math.Round(stats[StatType.Piercing].Modify(player.gun.gunData.piercing), 0)} \n";
+            statValues += $"<align=\"right\"> {Math.Round(stats[StatType.Bounce].Modify(player.gun.gunData.bounce), 0)} \n";
+            statTextMesh[0].text = statValues;
+
+            for (var i = 0; i < statTextMesh.Length; i++)
             {
-                var text = allTextObjects[i];
-                text.alignment = TextAlignmentOptions.BottomRight;
+                var statText = statTextMesh[i];
+                statText.alignment = TextAlignmentOptions.BottomRight;
+                statText.gameObject.SetActive(i <= 0);
                 
-                if (i == 0)
-                {
-                    PlayerController player = _gameController.player.GetComponent<PlayerController>();
-                    StatsHolder stats = player.stats;
-
-                    var difficultyText = allTextObjects[i];
-                    difficultyText.text = "";
-
-                    difficultyText.text += $"{Loadout.CharacterSelection.nameString}" + System.Environment.NewLine;
-                    // *should* be localized in the same way the game does internal
-                    difficultyText.text += $"{LocalizationSystem.GetLocalizedValue("difficulty_label")} {Loadout.difficultyLevel}" + System.Environment.NewLine;
-                    difficultyText.text += $"Damage: {Math.Round(stats[StatType.BulletDamage].Modify(player.gun.gunData.damage), 0)}" + System.Environment.NewLine;
-                    difficultyText.text += $"Projectiles: {Math.Round(stats[StatType.Projectiles].Modify(player.gun.gunData.numOfProjectiles), 0)}" + System.Environment.NewLine;
-                    difficultyText.text += $"Reload Time: {Math.Round(stats[StatType.ReloadRate].Modify(player.gun.gunData.reloadDuration), 1)}" + System.Environment.NewLine;
-                    difficultyText.text += $"Fire Rate: {Math.Round(1/stats[StatType.FireRate].ModifyInverse(player.gun.gunData.shotCooldown), 1)}" + System.Environment.NewLine;
-                    difficultyText.text += $"Max Ammo: {Math.Round(stats[StatType.MaxAmmo].Modify(player.gun.gunData.maxAmmo), 0)}" + System.Environment.NewLine;
-                    difficultyText.text += $"Pierce: {Math.Round(stats[StatType.Piercing].Modify(player.gun.gunData.piercing), 0)}" + System.Environment.NewLine;
-                    difficultyText.text += $"Bounce: {Math.Round(stats[StatType.Bounce].Modify(player.gun.gunData.bounce), 0)}" + System.Environment.NewLine;
-                }
-                text.gameObject.SetActive(i == 0);
+                var statLabelsText = statLabelsTextMesh[i];
+                statLabelsText.alignment = TextAlignmentOptions.BottomRight;
+                statLabelsText.gameObject.SetActive(i <= 0);
             }
-
-            // redo positioning so it comes up from the bottom left
-            rect.anchorMin = new Vector2(.8f, 0f);
-            rect.anchorMax = new Vector2(.8f, 0f);
-            rect.anchoredPosition = new Vector2(50f+10f, 16f);
-            rect.sizeDelta = new Vector2(100, 30f);
         }
     }
 
@@ -83,6 +112,7 @@ class InfoDisplay : MonoBehaviour
     private static void CombatStateEnterPostPatch(ref GameController ___owner)
     {
         // we can't use PauseState.Exit because that will also disable things when going to settings
+        if(statLabelsPanel != null) statLabelsPanel.Hide();
         if(statsPanel != null) statsPanel.Hide();
     }
-} 
+}
