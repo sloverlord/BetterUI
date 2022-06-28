@@ -10,22 +10,22 @@ namespace BetterUI
     {
         private readonly Harmony harmony = new Harmony(PluginInfo.PLUGIN_GUID);
 
-        internal static ManualLogSource Log;
+        public static ManualLogSource Log;
         
         public static ConfigEntry<bool> configPowerupDisplay;
-        public static ConfigEntry<bool> configDarknessDisplay;
+        public static ConfigEntry<bool> configInfoDisplay;
 
         private void Awake()
         {
             configPowerupDisplay = Config.Bind("Display.Powerups", "DisplayPowerups", true, "Whether or not to show selected powerups when leveling up.");
-            configDarknessDisplay = Config.Bind("Display.Darkness", "DisplayDarkness", true, "Whether or not to show the current darkness level.");
+            configInfoDisplay = Config.Bind("Display.Info", "DisplayInfo", true, "Whether or not to show current stats in pause menu.");
 
             Log = base.Logger;
 
             // Plugin startup logic
             Log.LogInfo("Better UI loaded.");
 
-            Harmony.CreateAndPatchAll(typeof(DarknessDisplay), null);
+            Harmony.CreateAndPatchAll(typeof(InfoDisplay), null);
             Harmony.CreateAndPatchAll(typeof(PowerupDisplay), null);
         }
     }
