@@ -8,7 +8,6 @@ using System;
 
 namespace BetterUI;
 
-
 class InfoDisplay : MonoBehaviour
 {
     private static Panel statsPanel = null;
@@ -51,7 +50,7 @@ class InfoDisplay : MonoBehaviour
             // for now we can just handle darkness level
             // todo: add an option to always display instead of just on pause
             statsPanel = statTextObject.GetComponent<Panel>();
-            statLabelsPanel = statTextObject.GetComponent<Panel>();
+            statLabelsPanel = statLabelsTextObject.GetComponent<Panel>();
 
             // some minor changes to make tweening work properly on first go
             Traverse.Create(statTextObject.GetComponent<AutoShowPanel>()).Field("startTime").SetValue(0f);
@@ -112,7 +111,7 @@ class InfoDisplay : MonoBehaviour
     private static void CombatStateEnterPostPatch(ref GameController ___owner)
     {
         // we can't use PauseState.Exit because that will also disable things when going to settings
-        if(statLabelsPanel != null) statLabelsPanel.Hide();
         if(statsPanel != null) statsPanel.Hide();
+        if(statLabelsPanel != null) statLabelsPanel.Hide();
     }
 }
