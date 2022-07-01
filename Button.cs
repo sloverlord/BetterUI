@@ -14,7 +14,7 @@ public class CustomInputs
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(PauseState), "Enter")]
-    private static void PauseStateEnterPostPatch(GameController ___owner)
+    private static void PauseStateEnterPostPatch()
     {
         PausePatchManager.Instance.enablePause();
     }
@@ -28,7 +28,7 @@ public class CustomInputs
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(PlayerController), "Update")]
-    private static void PlayerControllerUpdatePostPatch(PlayerController __instance)
+    private static void PlayerControllerUpdatePostPatch()
     {
         if (gameController != null){
             var keyboard = Keyboard.current;
@@ -88,15 +88,9 @@ public class PausePatchManager : MonoBehaviour{
         }
     }
 
-    private void doPause(){
-        isPaused = true;
-        BetterUI.Log.LogInfo("Paused");
-    }
-
     private IEnumerator puseEnableCR(){
         yield return new WaitForSecondsRealtime(unpauseDelay);
         isPaused = true;
-        BetterUI.Log.LogInfo("paused");
         yield break;
     }
 }
