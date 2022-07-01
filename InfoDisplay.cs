@@ -26,6 +26,9 @@ class InfoDisplay : MonoBehaviour
     private static void PauseStateEnterPostPatch(ref GameController ___owner)
     {
         if(BetterUI.configInfoDisplay.Value) {
+            if(statsPanel != null) statsPanel.Hide();
+            if(statLabelsPanel != null) statLabelsPanel.Hide();
+
             // copy the controls display so we don't have to manually add a bunch of tweening stuff
             var statTextObject = Instantiate(___owner.hud.transform.parent.Find("ControlsDisplay"), ___owner.hud.transform.parent);
             var statsRect = statTextObject.GetComponent<RectTransform>();

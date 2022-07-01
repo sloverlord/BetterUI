@@ -37,6 +37,9 @@
 	  <Reference Include="UnityEngine.UI">
 		  <HintPath>$(GameLibDir)/UnityEngine.UI.dll</HintPath>
 	  </Reference>
+	  <Reference Include="UnityEngine.UI">
+		  <HintPath>$(GameLibDir)/Unity.InputSystem.dll</HintPath>
+	  </Reference>
   </ItemGroup>
 
   <!--Automatic deploy-->

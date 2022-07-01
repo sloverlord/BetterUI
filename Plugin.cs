@@ -8,7 +8,9 @@ namespace BetterUI
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class BetterUI : BaseUnityPlugin
     {
-        private readonly Harmony harmony = new Harmony(PluginInfo.PLUGIN_GUID);
+        public static readonly Harmony harmony = new Harmony(PluginInfo.PLUGIN_GUID);
+
+        public static Harmony menuCloserHarmony = new Harmony(PluginInfo.PLUGIN_GUID);
 
         public static ManualLogSource Log;
         
@@ -38,6 +40,7 @@ namespace BetterUI
             Harmony.CreateAndPatchAll(typeof(InfoDisplay), null);
             Harmony.CreateAndPatchAll(typeof(PowerupDisplay), null);
             Harmony.CreateAndPatchAll(typeof(LastDarkness), null);
+            Harmony.CreateAndPatchAll(typeof(CustomInputs), null);
         }
     }
 }
