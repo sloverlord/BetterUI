@@ -8,14 +8,12 @@ namespace BetterUI
     class PowerupDisplay : MonoBehaviour
     {
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(PowerupMenuState), "PlayLevelUpAnimationCR")]
-        private static bool PlayLevelUpAnimationCRPostPatch(ref GameController ___owner)
+        [HarmonyPatch(typeof(PowerupMenuState), "Enter")]
+        private static void PowerupMenuStateEnterPrePatch(GameController ___owner)
         {
             if (BetterUI.configPowerupDisplay.Value){
                 ___owner.powerupListUI.Show();
             }
-
-            return true;
         }
 
         [HarmonyPostfix]
