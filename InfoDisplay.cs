@@ -3,6 +3,7 @@ using System;
 using HarmonyLib;
 
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 using flanne;
@@ -11,149 +12,175 @@ using flanne.UI;
 
 namespace BetterUI;
 
-class InfoDisplay
+public static class InfoDisplay
 {
-	private static Panel statsPanel = null;
-	private static Panel statLabelsPanel = null;
-
-	private static GameController _gameController;
+	private static StatsPanel statsPanel = null;
 
 	[HarmonyPatch(typeof(GameController), "Start")]
 	static void Prefix(GameController __instance)
 	{
-		_gameController = __instance;
+		GameObject panelObj = new("StatsPanel", typeof(RectTransform));
+
+		panelObj.transform.SetParent(__instance.hud.transform.parent);
+		panelObj.transform.localScale = Vector3.one;
+
+		RectTransform transform = panelObj.transform as RectTransform;
+		transform.anchorMin = new Vector2(1f, 0f);
+		transform.anchorMax = new Vector2(1f, 0f);
+
+		// Position the panel so that it shows up on the bottom right of the screen.
+		transform.anchoredPosition = new(-(transform.sizeDelta.x / 4f), 0f);
+
+		// Avoid calling Awake when we add the component below
+		panelObj.SetActive(false);
+
+		var canvasGroup = panelObj.AddComponent<CanvasGroup>();
+		canvasGroup.alpha = 1f;
+		canvasGroup.blocksRaycasts = false;
+		canvasGroup.interactable = false;
+		canvasGroup.ignoreParentGroups = false;
+
+		var layout = panelObj.AddComponent<HorizontalLayoutGroup>();
+		layout.useGUILayout = true;
+		layout.childAlignment = TextAnchor.LowerRight;
+
+		statsPanel = panelObj.AddComponent<StatsPanel>();
+		statsPanel.Init(__instance);
+
+		// Now call Awake
+		panelObj.SetActive(true);
 	}
 
 	[HarmonyPostfix]
 	[HarmonyPatch(typeof(PauseState), "Enter")]
-	private static void PauseStateEnterPostPatch(GameController ___owner)
+	private static void PauseStateEnterPostPatch()
 	{
 		if(BetterUI.configInfoDisplay.Value)
-			showStats(___owner);
+			statsPanel.Show();
 	}
 
 	[HarmonyPostfix]
 	[HarmonyPatch(typeof(PowerupMenuState), "Enter")]
-	private static void PowerupMenuStateEnterPostPatch(GameController ___owner)
+	private static void PowerupMenuStateEnterPostPatch()
 	{
 		if(BetterUI.configInfoDisplay.Value)
-			showStats(___owner);
+			statsPanel.Show();
 	}
 
 	[HarmonyPostfix]
 	[HarmonyPatch(typeof(DevilDealState), "Enter")]
-	private static void DevilDealStateEnterPostPatch(GameController ___owner)
+	private static void DevilDealStateEnterPostPatch()
 	{
 		if(BetterUI.configInfoDisplay.Value)
-			showStats(___owner);
+			statsPanel.Show();
 	}
 
 	[HarmonyPostfix]
 	[HarmonyPatch(typeof(ChestState), "Enter")]
-	private static void ChestStateEnterPostPatch(GameController ___owner)
+	private static void ChestStateEnterPostPatch()
 	{
 		if(BetterUI.configInfoDisplay.Value)
-			showStats(___owner);
+			statsPanel.Show();
 	}
 
 	// shows final stats
 	[HarmonyPostfix]
 	[HarmonyPatch(typeof(PlayerSurvivedState), "Enter")]
-	private static void PlayerSurvivedStateEnterPostFix(GameController ___owner)
+	private static void PlayerSurvivedStateEnterPostFix()
 	{
 		if(BetterUI.configInfoDisplay.Value)
-			showStats(___owner);
+			statsPanel.Show();
 	}
 
 	[HarmonyPostfix]
 	[HarmonyPatch(typeof(CombatState), "Enter")]
 	private static void CombatStateEnterPostPatch()
 	{
-		hideStats();
+		statsPanel.Hide();
+	}
+}
+
+public class StatsPanel: MonoBehaviour
+{
+	private GameController owner = null;
+	private PlayerController player = null;
+
+	private Panel left = null, right = null;
+
+	public void Init(GameController owner)
+	{
+		this.owner = owner;
 	}
 
-	public static void hideStats()
+	void Awake()
 	{
-		// we can't use PauseState.Exit because that will also disable things
-		// when going to settings
-		if(statsPanel != null)
-			statsPanel.Hide();
-
-		if(statLabelsPanel != null)
-			statLabelsPanel.Hide();
-	}
-
-	public static void showStats(GameController owner)
-	{
-		if(statsPanel != null)
-			statsPanel.Hide();
-
-		if(statLabelsPanel != null)
-			statLabelsPanel.Hide();
+		Transform controlsDisplay = owner
+			.hud
+			.transform
+			.parent
+			.Find("ControlsDisplay");
 
 		// copy the controls display so we don't have to manually add
 		// a bunch of tweening stuff
-		var statTextObject = GameObject.Instantiate(
-			owner.hud.transform.parent.Find("ControlsDisplay"),
-			owner.hud.transform.parent);
+		Transform statTextObject = GameObject.Instantiate(
+			controlsDisplay,
+			transform);
 
-		var statsRect = statTextObject.GetComponent<RectTransform>();
-		var statsCanvasGroup = statTextObject.GetComponent<CanvasGroup>();
+		statTextObject.position = controlsDisplay.position;
 
-		var statLabelsTextObject = GameObject.Instantiate(
-			owner.hud.transform.parent.Find("ControlsDisplay"),
-			owner.hud.transform.parent);
+		DestroyImmediate(statTextObject.GetComponent<AutoShowPanel>());
 
-		var statLabelsRect = statLabelsTextObject.GetComponent<RectTransform>();
-		var statLabelsCanvasGroup = statLabelsTextObject.GetComponent<CanvasGroup>();
+		Transform child = null;
 
-		// redo positioning so it comes up from the bottom left
-		statsRect.anchorMin = new Vector2(.8f, 0f);
-		statsRect.anchorMax = new Vector2(.8f, 0f);
-		statsRect.anchoredPosition = new Vector2(50f + 10f, 16f);
-		statsRect.sizeDelta = new Vector2(100, 30f);
+		while(statTextObject.childCount > 1)
+		{
+			child = statTextObject.GetChild(1);
+			DestroyImmediate(child.gameObject);
+		}
 
-		statLabelsRect.anchorMin = new Vector2(.85f, 0f);
-		statLabelsRect.anchorMax = new Vector2(.85f, 0f);
-		statLabelsRect.anchoredPosition = new Vector2(50f + 10f, 16f);
-		statLabelsRect.sizeDelta = new Vector2(100, 30f);
+		child = statTextObject.GetChild(0);
+		child.name = "Text";
 
-		// this panel will be useful later for adding a stats display
-		// for now we can just handle darkness level
-		// todo: add an option to always display instead of just on pause
-		statsPanel = statTextObject.GetComponent<Panel>();
-		statLabelsPanel = statLabelsTextObject.GetComponent<Panel>();
+		statTextObject.name = "Labels";
+
+		Transform statLabelsTextObject = Instantiate(statTextObject, transform);
+		statLabelsTextObject.name = "Values";
+
+		SetupPanel(statTextObject.gameObject);
+		SetupPanel(statLabelsTextObject.gameObject);
+
+		left = statTextObject.GetComponent<Panel>();
+		right = statLabelsTextObject.GetComponent<Panel>();
+
+		player = owner.player.GetComponent<PlayerController>();
+	}
+
+	private void SetupPanel(GameObject panelObj)
+	{
+		var fitter = panelObj.AddComponent<ContentSizeFitter>();
+		fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+		fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+		RectTransform rect = panelObj.GetComponent<RectTransform>();
+		CanvasGroup canvasGroup = panelObj.GetComponent<CanvasGroup>();
+
+		// Reset positions
+		rect.anchorMin = rect.anchorMax = Vector2.zero;
+		rect.anchoredPosition = Vector2.zero;
+
+		Panel panel = panelObj.GetComponent<Panel>();
 
 		// some minor changes to make tweening work properly on first go
-		Traverse
-			.Create(statTextObject.GetComponent<AutoShowPanel>())
-			.Field("startTime")
-			.SetValue(0f);
+		Traverse.Create(panel).Field("canvasGroup").SetValue(canvasGroup);
+		canvasGroup.alpha = 1f;
+	}
 
-		Traverse
-			.Create(statsPanel)
-			.Field("canvasGroup")
-			.SetValue(statsCanvasGroup);
-
-		statsCanvasGroup.alpha = 0f;
-
-		Traverse
-			.Create(statLabelsTextObject.GetComponent<AutoShowPanel>())
-			.Field("startTime")
-			.SetValue(0f);
-
-		Traverse
-			.Create(statLabelsPanel)
-			.Field("canvasGroup")
-			.SetValue(statLabelsCanvasGroup);
-
-		statLabelsCanvasGroup.alpha = 0f;
-
-		var statTextMesh = statTextObject.GetComponentsInChildren<TextMeshProUGUI>();
-		var statLabelsTextMesh = statLabelsTextObject.GetComponentsInChildren<TextMeshProUGUI>();
-
-		PlayerController player = _gameController.player.GetComponent<PlayerController>();
+	private void UpdatePanel()
+	{
 		StatsHolder stats = player.stats;
+
+		TextMeshProUGUI leftMesh = left.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+		TextMeshProUGUI rightMesh = right.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
 
 		string statHeader = $"<line-height=125%><color={BetterUI.configheaderColor.Value}>";
 		statHeader += $"<align=\"left\">{Loadout.CharacterSelection.nameString}\n";
@@ -169,7 +196,7 @@ class InfoDisplay
 		statLabels += $"<align=\"left\">Max Ammo:\n";
 		statLabels += $"<align=\"left\">Pierce:\n";
 		statLabels += $"<align=\"left\">Bounce:\n</color>";
-		statLabelsTextMesh[0].text = statHeader + statLabels;
+		leftMesh.text = statHeader + statLabels;
 
 		string statValues = $"<line-height=125%><color={BetterUI.configLabelColor.Value}>";
 		statValues += $"<align=\"right\">{Math.Round(stats[StatType.BulletDamage].Modify(player.gun.gunData.damage), 0)} \n";
@@ -179,17 +206,23 @@ class InfoDisplay
 		statValues += $"<align=\"right\">{Math.Round(stats[StatType.MaxAmmo].Modify(player.gun.gunData.maxAmmo), 0)} \n";
 		statValues += $"<align=\"right\">{Math.Round(stats[StatType.Piercing].Modify(player.gun.gunData.piercing), 0)} \n";
 		statValues += $"<align=\"right\">{Math.Round(stats[StatType.Bounce].Modify(player.gun.gunData.bounce), 0)} \n";
-		statTextMesh[0].text = statValues;
+		rightMesh.text = statValues;
 
-		for (var i = 0; i < statTextMesh.Length; i++)
-		{
-			var statText = statTextMesh[i];
-			statText.alignment = TextAlignmentOptions.BottomRight;
-			statText.gameObject.SetActive(i <= 0);
+		leftMesh.alignment = TextAlignmentOptions.BottomRight;
+		rightMesh.alignment = TextAlignmentOptions.BottomRight;
+	}
 
-			var statLabelsText = statLabelsTextMesh[i];
-			statLabelsText.alignment = TextAlignmentOptions.BottomRight;
-			statLabelsText.gameObject.SetActive(i <= 0);
-		}
+	public void Show()
+	{
+		UpdatePanel();
+
+		left.Show();
+		right.Show();
+	}
+
+	public void Hide()
+	{
+		left.Hide();
+		right.Hide();
 	}
 }
