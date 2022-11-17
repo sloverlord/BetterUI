@@ -1,7 +1,8 @@
 using HarmonyLib;
-using flanne.Core;
+
 using UnityEngine;
 
+using flanne.Core;
 
 namespace BetterUI;
 
@@ -17,7 +18,7 @@ class PowerupDisplay : MonoBehaviour
 
 	[HarmonyPostfix]
 	[HarmonyPatch(typeof(PowerupMenuState), "EndLevelUpAnimationCR")]
-	private static void EndLevelUpAnimationCRPostPatch(ref GameController ___owner)
+	private static void EndLevelUpAnimationCRPostPatch(GameController ___owner)
 	{
 		___owner.powerupListUI.Hide();
 	}

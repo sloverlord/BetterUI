@@ -1,9 +1,12 @@
+using System.Collections;
+
 using HarmonyLib;
+
 using UnityEngine;
 using UnityEngine.InputSystem;
+
 using flanne;
 using flanne.Core;
-using System.Collections;
 
 namespace BetterUI;
 
@@ -59,7 +62,7 @@ public class CustomInputs
 	}
 }
 
-public class PausePatchManager : MonoBehaviour
+public class PausePatchManager: MonoBehaviour
 {
 	private static PausePatchManager _instance;
 

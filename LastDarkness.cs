@@ -1,13 +1,16 @@
+using System.Reflection;
+
 using HarmonyLib;
+
+using UnityEngine;
+
 using flanne;
 using flanne.Core;
 using flanne.UI;
-using UnityEngine;
-using System.Reflection;
 
 namespace BetterUI;
 
-class LastDarkness : MonoBehaviour
+class LastDarkness: MonoBehaviour
 {
 	[HarmonyPostfix]
 	[HarmonyPatch(typeof(DifficultyController), "Init")]
@@ -20,7 +23,7 @@ class LastDarkness : MonoBehaviour
 	// updates difficulty on change in menu
 	[HarmonyPostfix]
 	[HarmonyPatch(typeof(DifficultyController), "IncreaseDifficulty")]
-	private static void IncreaseDifficultyPostFix(ref DifficultyController __instance)
+	private static void IncreaseDifficultyPostFix(DifficultyController __instance)
 	{
 		BetterUI.configLastDarkness.Value = __instance.difficulty;
 	}

@@ -1,12 +1,13 @@
 using BepInEx;
 using BepInEx.Configuration;
-using HarmonyLib;
 using BepInEx.Logging;
+
+using HarmonyLib;
 
 namespace BetterUI;
 
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-public class BetterUI : BaseUnityPlugin
+public class BetterUI: BaseUnityPlugin
 {
 	public static readonly Harmony harmony = new Harmony(PluginInfo.PLUGIN_GUID);
 

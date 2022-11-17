@@ -1,14 +1,17 @@
-using HarmonyLib;
-using flanne.Core;
-using flanne;
-using flanne.UI;
-using TMPro;
-using UnityEngine;
 using System;
+
+using HarmonyLib;
+
+using UnityEngine;
+using TMPro;
+
+using flanne;
+using flanne.Core;
+using flanne.UI;
 
 namespace BetterUI;
 
-class InfoDisplay : MonoBehaviour
+class InfoDisplay: MonoBehaviour
 {
 	private static Panel statsPanel = null;
 	private static Panel statLabelsPanel = null;
@@ -23,7 +26,7 @@ class InfoDisplay : MonoBehaviour
 
 	[HarmonyPostfix]
 	[HarmonyPatch(typeof(PauseState), "Enter")]
-	private static void PauseStateEnterPostPatch(ref GameController ___owner)
+	private static void PauseStateEnterPostPatch(GameController ___owner)
 	{
 		if(BetterUI.configInfoDisplay.Value)
 			showStats(___owner);
@@ -31,7 +34,7 @@ class InfoDisplay : MonoBehaviour
 
 	[HarmonyPostfix]
 	[HarmonyPatch(typeof(PowerupMenuState), "Enter")]
-	private static void PowerupMenuStateEnterPostPatch(ref GameController ___owner)
+	private static void PowerupMenuStateEnterPostPatch(GameController ___owner)
 	{
 		if(BetterUI.configInfoDisplay.Value)
 			showStats(___owner);
@@ -39,7 +42,7 @@ class InfoDisplay : MonoBehaviour
 
 	[HarmonyPostfix]
 	[HarmonyPatch(typeof(DevilDealState), "Enter")]
-	private static void DevilDealStateEnterPostPatch(ref GameController ___owner)
+	private static void DevilDealStateEnterPostPatch(GameController ___owner)
 	{
 		if(BetterUI.configInfoDisplay.Value)
 			showStats(___owner);
@@ -47,7 +50,7 @@ class InfoDisplay : MonoBehaviour
 
 	[HarmonyPostfix]
 	[HarmonyPatch(typeof(ChestState), "Enter")]
-	private static void ChestStateEnterPostPatch(ref GameController ___owner)
+	private static void ChestStateEnterPostPatch(GameController ___owner)
 	{
 		if(BetterUI.configInfoDisplay.Value)
 			showStats(___owner);
@@ -56,7 +59,7 @@ class InfoDisplay : MonoBehaviour
 	// shows final stats
 	[HarmonyPostfix]
 	[HarmonyPatch(typeof(PlayerSurvivedState), "Enter")]
-	private static void PlayerSurvivedStateEnterPostFix(ref GameController ___owner)
+	private static void PlayerSurvivedStateEnterPostFix(GameController ___owner)
 	{
 		if(BetterUI.configInfoDisplay.Value)
 			showStats(___owner);
@@ -71,13 +74,20 @@ class InfoDisplay : MonoBehaviour
 
 	public static void hideStats(){
 		// we can't use PauseState.Exit because that will also disable things when going to settings
-		if(statsPanel != null) statsPanel.Hide();
-		if(statLabelsPanel != null) statLabelsPanel.Hide();
+		if(statsPanel != null)
+			statsPanel.Hide();
+
+		if(statLabelsPanel != null)
+			statLabelsPanel.Hide();
 	}
 
-	public static void showStats(GameController owner){
-		if(statsPanel != null) statsPanel.Hide();
-		if(statLabelsPanel != null) statLabelsPanel.Hide();
+	public static void showStats(GameController owner)
+	{
+		if(statsPanel != null)
+			statsPanel.Hide();
+
+		if(statLabelsPanel != null)
+			statLabelsPanel.Hide();
 
 		// copy the controls display so we don't have to manually add a bunch of tweening stuff
 		var statTextObject = Instantiate(owner.hud.transform.parent.Find("ControlsDisplay"), owner.hud.transform.parent);
