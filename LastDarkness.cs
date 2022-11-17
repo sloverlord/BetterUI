@@ -2,15 +2,13 @@ using System.Reflection;
 
 using HarmonyLib;
 
-using UnityEngine;
-
 using flanne;
 using flanne.Core;
 using flanne.UI;
 
 namespace BetterUI;
 
-class LastDarkness: MonoBehaviour
+class LastDarkness
 {
 	[HarmonyPostfix]
 	[HarmonyPatch(typeof(DifficultyController), "Init")]

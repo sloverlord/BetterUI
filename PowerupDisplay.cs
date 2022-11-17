@@ -1,12 +1,10 @@
 using HarmonyLib;
 
-using UnityEngine;
-
 using flanne.Core;
 
 namespace BetterUI;
 
-class PowerupDisplay : MonoBehaviour
+public static class PowerupDisplay
 {
 	[HarmonyPrefix]
 	[HarmonyPatch(typeof(PowerupMenuState), "Enter")]
@@ -21,5 +19,12 @@ class PowerupDisplay : MonoBehaviour
 	private static void EndLevelUpAnimationCRPostPatch(GameController ___owner)
 	{
 		___owner.powerupListUI.Hide();
+	}
+
+	[HarmonyPatch(typeof(GameController), "Start")]
+	[HarmonyPostfix]
+	static void StartPosftix(GameController __instance)
+	{
+		__instance.powerupListUI.transform.SetSiblingIndex(0);
 	}
 }

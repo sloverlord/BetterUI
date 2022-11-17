@@ -1,6 +1,5 @@
 using BepInEx;
 using BepInEx.Configuration;
-using BepInEx.Logging;
 
 using HarmonyLib;
 
@@ -9,11 +8,7 @@ namespace BetterUI;
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public class BetterUI: BaseUnityPlugin
 {
-	public static readonly Harmony harmony = new Harmony(PluginInfo.PLUGIN_GUID);
-
-	public static Harmony menuCloserHarmony = new Harmony(PluginInfo.PLUGIN_GUID);
-
-	public static ManualLogSource Log;
+	private static readonly Harmony harmony = new Harmony(PluginInfo.PLUGIN_GUID);
 
 	public static ConfigEntry<bool> configPowerupDisplay;
 	public static ConfigEntry<bool> configInfoDisplay;
@@ -38,8 +33,6 @@ public class BetterUI: BaseUnityPlugin
 			true,
 			"Whether or not to show current stats in pause menu.");
 
-		Log = base.Logger;
-
 		configheaderColor = Config.Bind(
 			"Header.Color",
 			"HeaderColor",
@@ -59,11 +52,11 @@ public class BetterUI: BaseUnityPlugin
 			"What the darkness level should be on return to character select. (-1 to disable)");
 
 		// Plugin startup logic
-		Log.LogInfo("Better UI loaded.");
+		Logger.LogInfo("Better UI loaded.");
 
-		Harmony.CreateAndPatchAll(typeof(InfoDisplay), null);
-		Harmony.CreateAndPatchAll(typeof(PowerupDisplay), null);
-		Harmony.CreateAndPatchAll(typeof(LastDarkness), null);
-		Harmony.CreateAndPatchAll(typeof(CustomInputs), null);
+		harmony.PatchAll(typeof(InfoDisplay));
+		harmony.PatchAll(typeof(PowerupDisplay));
+		harmony.PatchAll(typeof(LastDarkness));
+		harmony.PatchAll(typeof(CustomInputs));
 	}
 }
