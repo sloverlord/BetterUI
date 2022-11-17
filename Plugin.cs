@@ -8,10 +8,7 @@ namespace BetterUI;
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public class BetterUI: BaseUnityPlugin
 {
-	public static readonly Harmony harmony = new Harmony(PluginInfo.PLUGIN_GUID);
-
-	public static Harmony menuCloserHarmony = new Harmony(PluginInfo.PLUGIN_GUID);
-
+	private static readonly Harmony harmony = new Harmony(PluginInfo.PLUGIN_GUID);
 
 	public static ConfigEntry<bool> configPowerupDisplay;
 	public static ConfigEntry<bool> configInfoDisplay;
@@ -57,9 +54,9 @@ public class BetterUI: BaseUnityPlugin
 		// Plugin startup logic
 		Logger.LogInfo("Better UI loaded.");
 
-		Harmony.CreateAndPatchAll(typeof(InfoDisplay), null);
-		Harmony.CreateAndPatchAll(typeof(PowerupDisplay), null);
-		Harmony.CreateAndPatchAll(typeof(LastDarkness), null);
-		Harmony.CreateAndPatchAll(typeof(CustomInputs), null);
+		harmony.PatchAll(typeof(InfoDisplay));
+		harmony.PatchAll(typeof(PowerupDisplay));
+		harmony.PatchAll(typeof(LastDarkness));
+		harmony.PatchAll(typeof(CustomInputs));
 	}
 }
