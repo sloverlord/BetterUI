@@ -16,8 +16,12 @@ class LastDarkness: MonoBehaviour
 	[HarmonyPatch(typeof(DifficultyController), "Init")]
 	private static void InitPostFix(DifficultyController __instance)
 	{
-		MethodInfo difficultyMethod = AccessTools.DeclaredMethod(typeof(DifficultyController), "SetDifficulty");
-		difficultyMethod.Invoke(__instance, new object[] { BetterUI.configLastDarkness.Value });
+		MethodInfo difficultyMethod = AccessTools
+			.DeclaredMethod(typeof(DifficultyController), "SetDifficulty");
+
+		difficultyMethod.Invoke(
+			__instance,
+			new object[] { BetterUI.configLastDarkness.Value });
 	}
 
 	// updates difficulty on change in menu

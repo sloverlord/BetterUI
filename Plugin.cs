@@ -26,14 +26,37 @@ public class BetterUI: BaseUnityPlugin
 
 	private void Awake()
 	{
-		configPowerupDisplay = Config.Bind("Display.Powerups", "DisplayPowerups", true, "Whether or not to show selected powerups when leveling up.");
-		configInfoDisplay = Config.Bind("Display.Info", "DisplayInfo", true, "Whether or not to show current stats in pause menu.");
-		configheaderColor = Config.Bind("Header.Color", "HeaderColor", "orange", "What color to make the header for the stat display.");
-		configLabelColor = Config.Bind("Label.Color", "LabelColor", "white", "What color to make the labels for the stat display.");
+		configPowerupDisplay = Config.Bind(
+			"Display.Powerups",
+			"DisplayPowerups",
+			true,
+			"Whether or not to show selected powerups when leveling up.");
 
-		configLastDarkness = Config.Bind("Last.Darkness", "LastDarkness", 1, "What the darkness level should be on return to character select. (-1 to disable)");
+		configInfoDisplay = Config.Bind(
+			"Display.Info",
+			"DisplayInfo",
+			true,
+			"Whether or not to show current stats in pause menu.");
 
 		Log = base.Logger;
+
+		configheaderColor = Config.Bind(
+			"Header.Color",
+			"HeaderColor",
+			"orange",
+			"What color to make the header for the stat display.");
+
+		configLabelColor = Config.Bind(
+			"Label.Color",
+			"LabelColor",
+			"white",
+			"What color to make the labels for the stat display.");
+
+		configLastDarkness = Config.Bind(
+			"Last.Darkness",
+			"LastDarkness",
+			1,
+			"What the darkness level should be on return to character select. (-1 to disable)");
 
 		// Plugin startup logic
 		Log.LogInfo("Better UI loaded.");
