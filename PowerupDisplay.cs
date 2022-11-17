@@ -1,12 +1,10 @@
 using HarmonyLib;
 
-using UnityEngine;
-
 using flanne.Core;
 
 namespace BetterUI;
 
-class PowerupDisplay : MonoBehaviour
+class PowerupDisplay
 {
 	[HarmonyPrefix]
 	[HarmonyPatch(typeof(PowerupMenuState), "Enter")]

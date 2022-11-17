@@ -11,7 +11,7 @@ using flanne.UI;
 
 namespace BetterUI;
 
-class InfoDisplay: MonoBehaviour
+class InfoDisplay
 {
 	private static Panel statsPanel = null;
 	private static Panel statLabelsPanel = null;
@@ -93,14 +93,14 @@ class InfoDisplay: MonoBehaviour
 
 		// copy the controls display so we don't have to manually add
 		// a bunch of tweening stuff
-		var statTextObject = Instantiate(
+		var statTextObject = GameObject.Instantiate(
 			owner.hud.transform.parent.Find("ControlsDisplay"),
 			owner.hud.transform.parent);
 
 		var statsRect = statTextObject.GetComponent<RectTransform>();
 		var statsCanvasGroup = statTextObject.GetComponent<CanvasGroup>();
 
-		var statLabelsTextObject = Instantiate(
+		var statLabelsTextObject = GameObject.Instantiate(
 			owner.hud.transform.parent.Find("ControlsDisplay"),
 			owner.hud.transform.parent);
 
