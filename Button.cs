@@ -5,8 +5,7 @@ using flanne;
 using flanne.Core;
 using System.Collections;
 
-namespace BetterUI
-{
+namespace BetterUI;
 
 public class CustomInputs
 {
@@ -98,5 +97,4 @@ public class PausePatchManager : MonoBehaviour
 		isPaused = true;
 		yield break;
 	}
-}
 }
