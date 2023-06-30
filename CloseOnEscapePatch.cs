@@ -11,7 +11,7 @@ using flanne.Core;
 namespace BetterUI;
 
 // Allow closing menus with escape
-public static class CustomInputs
+public static class CloseOnEscapePatch
 {
     private static GameController gameController = null;
     private static bool paused = false;
