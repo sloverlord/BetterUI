@@ -42,6 +42,9 @@
 		<Reference Include="UtillI">
 			<HintPath>$(BepInExDir)/plugins/UtillI.dll</HintPath>
 		</Reference>
+		<Reference Include="MTDUI">
+			<HintPath>$(BepInExDir)/plugins/MTDUI.dll</HintPath>
+		</Reference>
 	</ItemGroup>
 
 	<!--Automatic deploy-->
