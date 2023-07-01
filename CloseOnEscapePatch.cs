@@ -7,6 +7,8 @@ using UnityEngine.InputSystem;
 
 using flanne;
 using flanne.Core;
+using MTDUI.Data;
+using MTDUI.Controllers;
 
 namespace BetterUI;
 
@@ -61,10 +63,12 @@ public static class CloseOnEscapePatch
         {
             if (gameController.CurrentState is PauseState)
                 gameController.pauseResumeButton.onClick.Invoke();
-            else if (gameController.CurrentState is OptionsState)
-                gameController.ChangeState<PauseState>();
             else if (gameController.CurrentState is SynergyUIState)
                 gameController.synergiesUIBackButton.onClick.Invoke();
+            else if (gameController.CurrentState is ModOptionsPauseState) //MTDUI specific
+                ModOptionsMenuController.PauseMenuBackButton?.onClick.Invoke();
+            else if (gameController.CurrentState is ModOptionsPauseSubmenuState)
+                ModOptionsMenuController.PauseSubmenuBackButton?.onClick.Invoke();
         }
     }
 }
