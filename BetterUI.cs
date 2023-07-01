@@ -18,7 +18,11 @@ public class BetterUI : BaseUnityPlugin
 
     // config entries for info display colors
     public static ConfigEntry<string> configHeaderColor;
-    public static ConfigEntry<string> configLabelColor;
+    public static ConfigEntry<string> configDefaultLabelColor;
+    public static ConfigEntry<string> configGunLabelColor;
+    public static ConfigEntry<string> configProjectileLabelColor;
+    public static ConfigEntry<string> configSummonLabelColor;
+    public static ConfigEntry<string> configCharacterLabelColor;
 
     #region statsCustomConfigEntries
     public static ConfigEntry<bool> statsCustomHasDamage;
@@ -63,17 +67,13 @@ public class BetterUI : BaseUnityPlugin
             StatSelection.Base,
             "Which stats to show in the panel");
 
-        configHeaderColor = Config.Bind(
-            "Display.Stats.Color",
-            "HeaderColor",
-            "orange",
-            "What color to make the header for the stat display.");
+        configHeaderColor = Config.Bind("Display.Stats.Color", "HeaderColor", "orange", "What color to make the header for the stat display.");
 
-        configLabelColor = Config.Bind(
-            "Display.Stats.Color",
-            "LabelColor",
-            "white",
-            "What color to make the labels for the stat display.");
+        configDefaultLabelColor = Config.Bind("Display.Stats.Color", "DefaultLabelColor", "white", "What color to display all labels");
+        configGunLabelColor = Config.Bind("Display.Stats.Color", "GunLabelColor", "#ffb", "What color to display the gun relateded labels");
+        configProjectileLabelColor = Config.Bind("Display.Stats.Color", "ProjectileLabelColor", "#bff", "What color to display the gun relateded labels");
+        configSummonLabelColor = Config.Bind("Display.Stats.Color", "SummonLabelColor", "#fbf", "What color to display the summon relateded labels");
+        configCharacterLabelColor = Config.Bind("Display.Stats.Color", "CharacterLabelColor", "#ddd", "What color to display the gun relateded labels");
 
         statsCustomHasDamage = Config.Bind("Display.Stats.CustomSelection", "Damage", true, "Whether or not to show the stat on Custom StatSelection");
         statsCustomHasReloadTime = Config.Bind("Display.Stats.CustomSelection", "ReloadTime", true, "Whether or not to show the stat on Custom StatSelection");
